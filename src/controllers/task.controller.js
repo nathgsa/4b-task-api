@@ -38,15 +38,15 @@ exports.getTaskStats = async (req, res) => {
     }
 };
 
-exports.createTask = async (req, res)=> {
-    try{
-        // res.json(req.body)
-
-        validateRequest(req.body, ['title','description'])
+exports.createTask = async (req, res) => {
+    try {
+        validateRequest(req.body, ['title', 'description', 'deadline'])
 
         const task = new Task({
             title       : req.body.title,
-            description : req.body.description
+            description : req.body.description,
+            deadline    : req.body.deadline,
+            dateStarted : req.body.dateStarted || Date.now() // fallback to now
         })
 
         const new_task = await task.save();
@@ -55,14 +55,14 @@ exports.createTask = async (req, res)=> {
             message: "Successfully created new task",
             data: new_task
         })
-
-    }catch(error){
+    } catch (error) {
         console.log(error)
         res.status(400).json({
             message: error.message
         })
     }
 }
+
 
 exports.getAllTask = async (req, res) => {
     try{
@@ -147,10 +147,9 @@ exports.deleteTaskById = async (req, res) => {
 }
 
 exports.updateTaskById = async (req, res) => {
-    try{
+    try {
         const updatedData = req.body;
-        
-        // Validate status if provided
+
         if (updatedData.status) {
             const validStatuses = ['pending', 'in-progress', 'completed'];
             if (!validStatuses.includes(updatedData.status)) {
@@ -163,13 +162,10 @@ exports.updateTaskById = async (req, res) => {
         const updated_task = await Task.findByIdAndUpdate(
             req.params.task_id,
             updatedData,
-            {
-                new:true,
-                runValidators:true
-            }
+            { new: true, runValidators: true }
         )
 
-        if(!updated_task){
+        if (!updated_task) {
             return res.status(404).json({
                 message: "Task not found and unable to update it"
             })
@@ -178,9 +174,9 @@ exports.updateTaskById = async (req, res) => {
         res.status(200).json({
             message: "Updated the task successfully",
             data: updated_task
-        })  
+        })
 
-    }catch(error){
+    } catch (error) {
         console.log(error)
         res.status(400).json({
             message: error.message
@@ -188,12 +184,13 @@ exports.updateTaskById = async (req, res) => {
     }
 }
 
+
 exports.markTaskAsComplete = async (req, res) => {
     try{
         const updated_task = await Task.findByIdAndUpdate(
             req.params.task_id,
             {
-                task_status: true
+                status: 'completed'
             },
             {
                 new:true,
