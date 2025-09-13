@@ -193,7 +193,7 @@ exports.markTaskAsComplete = async (req, res) => {
         const updated_task = await Task.findByIdAndUpdate(
             req.params.task_id,
             {
-                status: 'completed'
+                task_status: true
             },
             {
                 new:true,

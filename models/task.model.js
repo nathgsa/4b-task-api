@@ -8,7 +8,7 @@ const TaskSchema = new mongoose.Schema({
     },
     description:{
         type:String,
-        required: [true, 'Please provide a discription for the task'],
+        required: [true, 'Please provide a description for the task'],
         trim:true
     },
     status: {
@@ -17,6 +17,6 @@ const TaskSchema = new mongoose.Schema({
         default: 'pending',
         required: true
     }
-}, {timestamps:true}) /**this will automatically adds creadted_at and udpated_at */
+}, {timestamps:true}) /**this will automatically adds created_at and updated_at */
 
 module.exports = mongoose.model('Task', TaskSchema)
